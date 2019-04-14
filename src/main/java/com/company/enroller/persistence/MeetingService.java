@@ -41,15 +41,25 @@ public class MeetingService {
 		transaction.commit();
 	}
 	
-	public void updateMeeting(Meeting meeting) {
+	public Meeting updateMeeting(Meeting meeting) {
 		Transaction transaction = connector.getSession().beginTransaction();
 		connector.getSession().merge(meeting);
 		transaction.commit();
+		return meeting;
 	}
 
 	public Collection<Participant> getEnrolled(long id) {
 		Meeting meeting = findById(id);
 		return meeting.getParticipants();
+	}
+	
+	public Meeting enroll(long id, Participant participant) {
+		Transaction transaction = connector.getSession().beginTransaction();
+		Meeting meeting = findById(id);
+		meeting.addParticipant(participant);
+		connector.getSession().merge(meeting);
+		transaction.commit();
+		return meeting;
 	}
 
 	

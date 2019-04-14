@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.company.enroller.model.Meeting;
 import com.company.enroller.model.Participant;
 import com.company.enroller.persistence.MeetingService;
+import com.company.enroller.persistence.ParticipantService;
 
 @RestController
 @RequestMapping("/meetings")
@@ -21,6 +22,9 @@ public class MeetingRestController {
 
 	@Autowired
 	MeetingService meetingService;
+
+	@Autowired
+	ParticipantService participantService;
 
 	@RequestMapping(value = "", method = RequestMethod.GET)
 	public ResponseEntity<?> getMeetings() {
@@ -39,6 +43,7 @@ public class MeetingRestController {
 
 	@RequestMapping(value = "", method = RequestMethod.POST)
 	public ResponseEntity<?> registerMeeting(@RequestBody Meeting meeting) {
+		// Ten warunek chyba jest niekonieczny (autmoatyczna generacja id)
 		if (meetingService.findById(meeting.getId()) != null) {
 			ResponseEntity<Meeting> entity = new ResponseEntity<Meeting>(HttpStatus.CONFLICT);
 			return entity;
@@ -54,12 +59,10 @@ public class MeetingRestController {
 	public ResponseEntity<?> deleteMeeting(@PathVariable("id") long id) {
 		Meeting meeting = meetingService.findById(id);
 		if (meeting == null) {
-			return new ResponseEntity("A meeting with id " + id + " does not exist",
-					HttpStatus.NOT_FOUND);
+			return new ResponseEntity("A meeting with id " + id + " does not exist", HttpStatus.NOT_FOUND);
 		} else {
 			meetingService.deleteMeeting(meeting);
-			return new ResponseEntity("A meeting  " + meeting.getTitle() + " has been deleted.",
-					HttpStatus.NO_CONTENT);
+			return new ResponseEntity("A meeting  " + meeting.getTitle() + " has been deleted.", HttpStatus.NO_CONTENT);
 		}
 	}
 
@@ -85,11 +88,29 @@ public class MeetingRestController {
 			return new ResponseEntity<Meeting>(meeting, HttpStatus.OK);
 		}
 	}
-	
+
 	@RequestMapping(value = "/{id}/participants", method = RequestMethod.GET)
 	public ResponseEntity<?> getAllEnrolled(@PathVariable("id") long id) {
-		Collection<Participant> participants = meetingService.getEnrolled(id);
-		return new ResponseEntity<Collection<Participant>>(participants, HttpStatus.OK);
+		if (meetingService.findById(id) == null) {
+			return new ResponseEntity("A meeting with id " + id + " does not exist", HttpStatus.NOT_FOUND);
+		} else {
+			Collection<Participant> participants = meetingService.getEnrolled(id);
+			return new ResponseEntity<Collection<Participant>>(participants, HttpStatus.OK);
+		}
+	}
+
+	@RequestMapping(value = "/{id}/participants", method = RequestMethod.POST)
+	public ResponseEntity<?> getAllEnrolled(@PathVariable("id") long id,
+			@RequestBody Participant enrollingParticipant) {
+		Participant participant = participantService.findByLogin(enrollingParticipant.getLogin());
+		if (participant == null) {
+			return new ResponseEntity("A participant with login " + enrollingParticipant.getLogin() + " does not exist",
+					HttpStatus.NOT_FOUND);
+		} else {
+			meetingService.enroll(id, participant);
+			Collection<Participant> participants = meetingService.getEnrolled(id);
+			return new ResponseEntity<Collection<Participant>>(participants, HttpStatus.OK);
+		}
 	}
 
 }

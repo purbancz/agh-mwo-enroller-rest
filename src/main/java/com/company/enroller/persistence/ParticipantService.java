@@ -37,10 +37,11 @@ public class ParticipantService {
 		transaction.commit();
 	}
 	
-	public void updateParticipant(Participant participant) {
+	public Participant updateParticipant(Participant participant) {
 		Transaction transaction = connector.getSession().beginTransaction();
 		connector.getSession().merge(participant);
 		transaction.commit();
+		return participant;
 	}
 
 }
