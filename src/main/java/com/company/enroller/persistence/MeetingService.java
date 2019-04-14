@@ -47,6 +47,13 @@ public class MeetingService {
 		transaction.commit();
 	}
 
+	public Collection<Participant> getEnrolled(long id) {
+		Meeting meeting = findById(id);
+		return meeting.getParticipants();
+	}
+
+	
+
 	
 
 }

@@ -44,7 +44,8 @@ public class MeetingRestController {
 			return entity;
 		} else {
 			meetingService.saveMeeting(meeting);
-			return new ResponseEntity("A meeting with login " + meeting.getId() + " has been created.",
+			return new ResponseEntity(
+					"A meeting entitled " + meeting.getTitle() + " on " + meeting.getDate() + " has been created.",
 					HttpStatus.CREATED);
 		}
 	}
@@ -53,11 +54,11 @@ public class MeetingRestController {
 	public ResponseEntity<?> deleteMeeting(@PathVariable("id") long id) {
 		Meeting meeting = meetingService.findById(id);
 		if (meeting == null) {
-			return new ResponseEntity("A participant with login " + meeting.getTitle() + " does not exist",
+			return new ResponseEntity("A meeting with id " + id + " does not exist",
 					HttpStatus.NOT_FOUND);
 		} else {
 			meetingService.deleteMeeting(meeting);
-			return new ResponseEntity("A participant with login " + meeting.getTitle() + " has been deleted.",
+			return new ResponseEntity("A meeting  " + meeting.getTitle() + " has been deleted.",
 					HttpStatus.NO_CONTENT);
 		}
 	}
@@ -68,18 +69,27 @@ public class MeetingRestController {
 		if (meeting == null) {
 			return new ResponseEntity(HttpStatus.NOT_FOUND);
 		} else {
-			if (!incommingMeeting.getTitle().equals(null) || !incommingMeeting.getTitle().equals(meeting.getTitle())) {
+			if (incommingMeeting.getTitle() != null && !incommingMeeting.getTitle().equals("")
+					&& !incommingMeeting.getTitle().equals(meeting.getTitle())) {
 				meeting.setTitle(incommingMeeting.getTitle());
 			}
-			if (!incommingMeeting.getDescription().equals(null) || !incommingMeeting.getDescription().equals(meeting.getDescription())) {
+			if (incommingMeeting.getDescription() != null && !incommingMeeting.getDescription().equals("")
+					&& !incommingMeeting.getDescription().equals(meeting.getDescription())) {
 				meeting.setDescription(incommingMeeting.getDescription());
 			}
-			if (!incommingMeeting.getDate().equals(null) || !incommingMeeting.getDate().equals(meeting.getDate())) {
+			if (incommingMeeting.getDate() != null && !incommingMeeting.getDate().equals("")
+					&& !incommingMeeting.getDate().equals(meeting.getDate())) {
 				meeting.setDate(incommingMeeting.getDate());
 			}
 			meetingService.updateMeeting(meeting);
 			return new ResponseEntity<Meeting>(meeting, HttpStatus.OK);
 		}
+	}
+	
+	@RequestMapping(value = "/{id}/participants", method = RequestMethod.GET)
+	public ResponseEntity<?> getAllEnrolled(@PathVariable("id") long id) {
+		Collection<Participant> participants = meetingService.getEnrolled(id);
+		return new ResponseEntity<Collection<Participant>>(participants, HttpStatus.OK);
 	}
 
 }
