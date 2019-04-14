@@ -62,6 +62,15 @@ public class MeetingService {
 		return meeting;
 	}
 
+	public Meeting unenroll(long id, Participant participant) {
+		Transaction transaction = connector.getSession().beginTransaction();
+		Meeting meeting = findById(id);
+		meeting.removeParticipant(participant);
+		connector.getSession().merge(meeting);
+		transaction.commit();
+		return meeting;
+	}
+
 	
 
 	

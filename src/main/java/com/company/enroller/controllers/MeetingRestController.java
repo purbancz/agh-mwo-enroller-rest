@@ -100,7 +100,7 @@ public class MeetingRestController {
 	}
 
 	@RequestMapping(value = "/{id}/participants", method = RequestMethod.POST)
-	public ResponseEntity<?> getAllEnrolled(@PathVariable("id") long id,
+	public ResponseEntity<?> enrollParticipant(@PathVariable("id") long id,
 			@RequestBody Participant enrollingParticipant) {
 		Participant participant = participantService.findByLogin(enrollingParticipant.getLogin());
 		if (participant == null) {
@@ -109,6 +109,23 @@ public class MeetingRestController {
 		} else {
 			meetingService.enroll(id, participant);
 			Collection<Participant> participants = meetingService.getEnrolled(id);
+			return new ResponseEntity<Collection<Participant>>(participants, HttpStatus.OK);
+		}
+	}
+
+	@RequestMapping(value = "/{id}/participants", method = RequestMethod.PUT)
+	public ResponseEntity<?> unEnrollParticipant(@PathVariable("id") long id,
+			@RequestBody Participant enrollingParticipant) {
+		Participant participant = participantService.findByLogin(enrollingParticipant.getLogin());
+		Collection<Participant> participants = meetingService.getEnrolled(id);
+		if (participant == null) {
+			return new ResponseEntity("A participant with login " + enrollingParticipant.getLogin() + " does not exist",
+					HttpStatus.NOT_FOUND);
+		} else if (!participants.contains(participant)) {
+			return new ResponseEntity("A participant with login " + enrollingParticipant.getLogin()
+					+ " has not been enrolled to this meeting", HttpStatus.NOT_FOUND);
+		} else {
+			meetingService.unenroll(id, participant);
 			return new ResponseEntity<Collection<Participant>>(participants, HttpStatus.OK);
 		}
 	}
