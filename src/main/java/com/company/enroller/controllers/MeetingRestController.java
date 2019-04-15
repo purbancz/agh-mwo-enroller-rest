@@ -133,13 +133,50 @@ public class MeetingRestController {
 			return new ResponseEntity<Collection<Participant>>(participants, HttpStatus.OK);
 		}
 	}
-	
+
 	@RequestMapping(value = "/by-title", method = RequestMethod.GET)
 	public ResponseEntity<?> getMeetingsByTitle() {
-//		List<Meeting> meetingsList = new ArrayList<Meeting>(meetingService.getAll());
-//		Comparator<Meeting> compareByTitle = (Meeting m1, Meeting m2) -> m1.getTitle().compareTo(m2.getTitle());
-//		Collections.sort(meetingsList, compareByTitle);
-		return new ResponseEntity<List<Meeting>>(meetingService.getAllByTitle(), HttpStatus.OK);
+		List<Meeting> list = new ArrayList<Meeting>(meetingService.getAll());
+		Comparator<Meeting> compareByTitle = (Meeting m1, Meeting m2) -> m1.getTitle().compareTo(m2.getTitle());
+		Collections.sort(list, compareByTitle);
+		return new ResponseEntity<List<Meeting>>(list, HttpStatus.OK);
+	}
+
+	@RequestMapping(value = "/search/{query}", method = RequestMethod.GET)
+	public ResponseEntity<?> searchMeetings(@PathVariable("query") String string) {
+		Collection<Meeting> meetings = meetingService.getAll();
+		Collection<Meeting> searchQuery = new ArrayList<Meeting>();
+		for (Meeting meeting : meetings) {
+			if (meeting.getTitle().contains(string) || meeting.getDescription().contains(string)) {
+				searchQuery.add(meeting);
+			}
+		}
+		if (searchQuery.isEmpty()) {
+			return new ResponseEntity("Nie znaleziono", HttpStatus.OK);
+		} else {
+			return new ResponseEntity<Collection<Meeting>>(searchQuery, HttpStatus.OK);
+		}
+	}
+
+	@RequestMapping(value = "/searchuser/{login}", method = RequestMethod.GET)
+	public ResponseEntity<?> searchByParticipant(@PathVariable("login") String string) {
+		Participant participant = participantService.findByLogin(string);
+		if (participant == null) {
+			return new ResponseEntity<Participant>(HttpStatus.NOT_FOUND);
+		} else {
+			Collection<Meeting> meetings = meetingService.getAll();
+			Collection<Meeting> searchQuery = new ArrayList<Meeting>();
+			for (Meeting meeting : meetings) {
+				if (meeting.getParticipants().contains(participant)) {
+					searchQuery.add(meeting);
+				}
+			}
+			if (searchQuery.isEmpty()) {
+				return new ResponseEntity("Użytkownik nie jest jeszcze zapisany", HttpStatus.OK);
+			} else {
+				return new ResponseEntity<Collection<Meeting>>(searchQuery, HttpStatus.OK);
+			}
+		}
 	}
 
 }

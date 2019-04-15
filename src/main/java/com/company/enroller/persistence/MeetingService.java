@@ -75,14 +75,34 @@ public class MeetingService {
 		return meeting;
 	}
 	
-	public List<Meeting> getAllByTitle() {
-		List<Meeting> list = new ArrayList<Meeting>(getAll());
-		Comparator<Meeting> compareByTitle = (Meeting m1, Meeting m2) -> m1.getTitle().compareTo(m2.getTitle());
-		Collections.sort(list, compareByTitle);
-		return list;
-	}
-
-	
+//	public List<Meeting> getAllByTitle() {
+//		List<Meeting> list = new ArrayList<Meeting>(getAll());
+//		Comparator<Meeting> compareByTitle = (Meeting m1, Meeting m2) -> m1.getTitle().compareTo(m2.getTitle());
+//		Collections.sort(list, compareByTitle);
+//		return list;
+//	}
+//
+//	public Collection<Meeting> searchByTitleAndDesc(String string) {
+//		Collection<Meeting> meetings = getAll();
+//		Collection<Meeting> searchQuery = new ArrayList<Meeting>();
+//		for (Meeting meeting : meetings) {
+//			if (meeting.getTitle().contains(string) || meeting.getDescription().contains(string)) {
+//				searchQuery.add(meeting);
+//			}
+//		}
+//		return searchQuery;
+//	}
+//	
+//	public Collection<Meeting> searchByTitleAndDesc(String string) {
+//		Collection<Meeting> meetings = getAll();
+//		Collection<Meeting> searchQuery = new ArrayList<Meeting>();
+//		for (Meeting meeting : meetings) {
+//			if (meeting.getParticipants().contains(o)) {
+//				searchQuery.add(meeting);
+//			}
+//		}
+//		return searchQuery;
+//	}
 
 	
 
