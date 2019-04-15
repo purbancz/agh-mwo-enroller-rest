@@ -1,6 +1,10 @@
 package com.company.enroller.controllers;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -128,6 +132,14 @@ public class MeetingRestController {
 			meetingService.unenroll(id, participant);
 			return new ResponseEntity<Collection<Participant>>(participants, HttpStatus.OK);
 		}
+	}
+	
+	@RequestMapping(value = "/by-title", method = RequestMethod.GET)
+	public ResponseEntity<?> getMeetingsByTitle() {
+//		List<Meeting> meetingsList = new ArrayList<Meeting>(meetingService.getAll());
+//		Comparator<Meeting> compareByTitle = (Meeting m1, Meeting m2) -> m1.getTitle().compareTo(m2.getTitle());
+//		Collections.sort(meetingsList, compareByTitle);
+		return new ResponseEntity<List<Meeting>>(meetingService.getAllByTitle(), HttpStatus.OK);
 	}
 
 }

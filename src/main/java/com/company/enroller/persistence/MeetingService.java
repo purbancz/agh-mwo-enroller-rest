@@ -1,6 +1,10 @@
 package com.company.enroller.persistence;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 import org.hibernate.Query;
 import org.hibernate.Transaction;
@@ -69,6 +73,13 @@ public class MeetingService {
 		connector.getSession().merge(meeting);
 		transaction.commit();
 		return meeting;
+	}
+	
+	public List<Meeting> getAllByTitle() {
+		List<Meeting> list = new ArrayList<Meeting>(getAll());
+		Comparator<Meeting> compareByTitle = (Meeting m1, Meeting m2) -> m1.getTitle().compareTo(m2.getTitle());
+		Collections.sort(list, compareByTitle);
+		return list;
 	}
 
 	
